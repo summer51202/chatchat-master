@@ -86,10 +86,11 @@ public class Main {
 
 	public static Connection getConnection() throws Exception {
 		try {
-			String driver = "com.mysql.cj.jdbc.Driver";
-			String url = "jdbc:mysql://localhost:3306/testDB?serverTimezone=UTC";
-			String username = "root";
-			String password = "joke90566";
+			DatabaseInfo databaseInfo = new DatabaseInfo();
+			String driver = databaseInfo.getDrive();
+			String url = databaseInfo.getUrl();
+			String username = databaseInfo.getUser();
+			String password = databaseInfo.getPassword();
 			Class.forName(driver);
 
 			Connection conn = DriverManager.getConnection(url, username, password);

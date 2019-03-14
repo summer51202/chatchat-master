@@ -5,6 +5,10 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.jar.JarFile;
 
 import javax.swing.JButton;
@@ -31,7 +35,7 @@ public class loginPage extends JFrame implements ActionListener{
 		setLayout(null);
 		setTitle("Welcome To Chatchat");
 		
-		//Display window in the central of screen.
+		//CENTRALIZE THE WINDOW
 		Toolkit toolkit = getToolkit();
 		Dimension size = toolkit.getScreenSize();
 		setLocation(size.width/2 - getWidth()/2, size.height/2 - getHeight()/2);
@@ -42,65 +46,65 @@ public class loginPage extends JFrame implements ActionListener{
 		icon.setSize(400, 100);
 		add(icon);
 		
-		username = new JTextField("<Your Username>");
-		username.setForeground(new java.awt.Color(204, 204, 204));
-		username.setHorizontalAlignment(SwingConstants.CENTER);
-		username.setLocation(100, 200);
-		username.setSize(200, 50);
-		add(username);
-		username.addKeyListener(new java.awt.event.KeyAdapter() {
+		usernameTextField = new JTextField("<Your Username>");
+		usernameTextField.setForeground(new java.awt.Color(204, 204, 204));
+		usernameTextField.setHorizontalAlignment(SwingConstants.CENTER);
+		usernameTextField.setLocation(100, 200);
+		usernameTextField.setSize(200, 50);
+		add(usernameTextField);
+		usernameTextField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                if(username.getForeground()!= Color.BLACK){
-                    if(username.getText().equals("<Your Username>")){
-                        username.setText("");
+                if(usernameTextField.getForeground()!= Color.BLACK){
+                    if(usernameTextField.getText().equals("<Your Username>")){
+                        usernameTextField.setText("");
                     }
                 }
-                username.setForeground(Color.BLACK);
+                usernameTextField.setForeground(Color.BLACK);
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
-            	if(username.getText().isEmpty()==true){
-                    username.setText("<Your Username>");
-                    username.setCaretPosition(0);
-                    username.setForeground(new java.awt.Color(204,204,204));
+            	if(usernameTextField.getText().isEmpty()==true){
+                    usernameTextField.setText("<Your Username>");
+                    usernameTextField.setCaretPosition(0);
+                    usernameTextField.setForeground(new java.awt.Color(204,204,204));
                 }
             }
         });
 		
-		password = new JTextField("<Your Password>");
-		password.setForeground(new java.awt.Color(204, 204, 204));
-		password.setHorizontalAlignment(SwingConstants.CENTER);
-		password.setLocation(100, 250);
-		password.setSize(200, 50);
-		add(password);
-		password.addKeyListener(new java.awt.event.KeyAdapter() {
+		passwordTextField = new JTextField("<Your Password>");
+		passwordTextField.setForeground(new java.awt.Color(204, 204, 204));
+		passwordTextField.setHorizontalAlignment(SwingConstants.CENTER);
+		passwordTextField.setLocation(100, 250);
+		passwordTextField.setSize(200, 50);
+		add(passwordTextField);
+		passwordTextField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                if(password.getForeground()!= Color.BLACK){
-                    if(password.getText().equals("<Your Password>")){
-                        password.setText("");
+                if(passwordTextField.getForeground()!= Color.BLACK){
+                    if(passwordTextField.getText().equals("<Your Password>")){
+                        passwordTextField.setText("");
                     }
                 }
-                password.setForeground(Color.BLACK);
+                passwordTextField.setForeground(Color.BLACK);
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
-            	if(password.getText().isEmpty()==true){
-                    password.setText("<Your Password>");
-                    password.setCaretPosition(0);
-                    password.setForeground(new java.awt.Color(204,204,204));
+            	if(passwordTextField.getText().isEmpty()==true){
+                    passwordTextField.setText("<Your Password>");
+                    passwordTextField.setCaretPosition(0);
+                    passwordTextField.setForeground(new java.awt.Color(204,204,204));
                 }
             }
         });
 		
-		login = new JButton("Log In");
-		login.setLocation(150, 325);
-		login.setSize(100, 25);
-		login.addActionListener(this);
-		add(login);
+		loginButton = new JButton("Log In");
+		loginButton.setLocation(150, 325);
+		loginButton.setSize(100, 25);
+		loginButton.addActionListener(this);
+		add(loginButton);
 		
-		signUp = new JButton("Sign Up");
-		signUp.setLocation(150, 350);
-		signUp.setSize(100, 25);
-		signUp.addActionListener(this);
-		add(signUp);
+		signUpButton = new JButton("Sign Up");
+		signUpButton.setLocation(150, 350);
+		signUpButton.setSize(100, 25);
+		signUpButton.addActionListener(this);
+		add(signUpButton);
 		
 	}	
 	
@@ -109,16 +113,43 @@ public class loginPage extends JFrame implements ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		String username = usernameTextField.getText();
+        String password = passwordTextField.getText();
 		
-		
+        DBHandler dbHandler = new DBHandler();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        
+        if (e.getSource() == loginButton) {
+        	try {
+        		System.out.println("[Login]");
+        		if(dbHandler.loginCheck(username, password)) {
+        			System.out.println(username + "Success Login");
+        			JOptionPane.showMessageDialog(this, "Login Successful!", "Login", JOptionPane.INFORMATION_MESSAGE);
+        			
+        			MainPage mainPage = new MainPage();
+        			mainPage.showUp();
+        			dispose();
+        		} else {
+        			System.out.println(username + "Failed Login");
+        			JOptionPane.showMessageDialog(this, "Failed, Password or Username Incorrect!", "Failed", JOptionPane.ERROR_MESSAGE);
+        		}
+        		
+//			} catch (SQLException se) {
+//				se.printStackTrace();
+			} catch (Exception ee) {
+				ee.printStackTrace();
+			}
+        }
 
 	}
+	
 	
 	static loginPage loginPage;
 	
 	private JLabel icon = null;
-	private JTextField username = null;
-	private JTextField password = null;
-	private JButton login;
-	private JButton signUp;
+	private JTextField usernameTextField = null;
+	private JTextField passwordTextField = null;
+	private JButton loginButton;
+	private JButton signUpButton;
 }
