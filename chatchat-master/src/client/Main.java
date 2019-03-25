@@ -1,12 +1,10 @@
-package chatchat;
+package client;
 
 import java.sql.*;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 public class Main {
 
@@ -19,12 +17,10 @@ public class Main {
 		}
 		
 		System.out.println("[Ready]");
-		loginPage loginPage = new loginPage();
+		LoginPage loginPage = new LoginPage();
 		loginPage.showUp();
 
-		// createTable();
-		// insertInfo();
-		// get();
+	
 	}
 
 	public static ArrayList<String> get() throws Exception {

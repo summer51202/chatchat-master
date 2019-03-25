@@ -1,4 +1,4 @@
-package chatchat;
+package client;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,9 +27,11 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 
 
-public class loginPage extends JFrame implements ActionListener{
 
-	public loginPage() {
+
+public class LoginPage extends JFrame implements ActionListener{
+
+	public LoginPage() {
 		setSize(400, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
@@ -111,6 +113,7 @@ public class loginPage extends JFrame implements ActionListener{
 	public void showUp() {
 		setVisible(true);
 	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String username = usernameTextField.getText();
@@ -124,28 +127,57 @@ public class loginPage extends JFrame implements ActionListener{
         	try {
         		System.out.println("[Login]");
         		if(dbHandler.loginCheck(username, password)) {
-        			System.out.println(username + "Success Login");
-        			JOptionPane.showMessageDialog(this, "Login Successful!", "Login", JOptionPane.INFORMATION_MESSAGE);
-        			
-        			MainPage mainPage = new MainPage();
+        			System.out.println("[" + username + " Success Login]");
+        			JOptionPane.showMessageDialog(this, "Login successful!", "Login", JOptionPane.INFORMATION_MESSAGE);
+        			User user = new User(username);
+        			MainPage mainPage = new MainPage(user);
         			mainPage.showUp();
         			dispose();
         		} else {
-        			System.out.println(username + "Failed Login");
-        			JOptionPane.showMessageDialog(this, "Failed, Password or Username Incorrect!", "Failed", JOptionPane.ERROR_MESSAGE);
+        			System.out.println("[" + username + " Failed Login]");
+        			JOptionPane.showMessageDialog(this, "Failed, password or username incorrect!", "Failed", JOptionPane.ERROR_MESSAGE);
+        			
+        			usernameTextField.setText("<Your Username>");
+        			usernameTextField.setForeground(new java.awt.Color(204,204,204));
+        			passwordTextField.setText("<Your Password>");
+        			passwordTextField.setForeground(new java.awt.Color(204,204,204));
         		}
-        		
-//			} catch (SQLException se) {
-//				se.printStackTrace();
+
 			} catch (Exception ee) {
 				ee.printStackTrace();
+			}
+        }
+        
+        if (e.getSource() == signUpButton) {
+        	try {
+				System.out.println("[SignUp]");
+				if(!dbHandler.accountCheck(username)) {
+					System.out.println("[" + username + " Success SignUp]");
+					JOptionPane.showMessageDialog(this, "Sign up successful!", "SignUp", JOptionPane.INFORMATION_MESSAGE);
+					dbHandler.signUpInfo(username, password);
+					
+					usernameTextField.setText("<Your Username>");
+        			usernameTextField.setForeground(new java.awt.Color(204,204,204));
+        			passwordTextField.setText("<Your Password>");
+        			passwordTextField.setForeground(new java.awt.Color(204,204,204));
+				} else {
+					System.out.println("[" + username + " Failed SignUp]");
+        			JOptionPane.showMessageDialog(this, "Failed, this username has been used!", "Failed", JOptionPane.ERROR_MESSAGE);
+        			
+        			usernameTextField.setText("<Your Username>");
+        			usernameTextField.setForeground(new java.awt.Color(204,204,204));
+        			passwordTextField.setText("<Your Password>");
+        			passwordTextField.setForeground(new java.awt.Color(204,204,204));
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
 			}
         }
 
 	}
 	
 	
-	static loginPage loginPage;
+	static LoginPage loginPage;
 	
 	private JLabel icon = null;
 	private JTextField usernameTextField = null;

@@ -1,4 +1,4 @@
-package chatchat;
+package client;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -48,7 +48,7 @@ public class DBHandler {
 		}
 	}
 
-	public static boolean IDCheck(String account) throws Exception{
+	public static boolean accountCheck(String account) throws Exception{
 		boolean result = false;
 		try {
 			PreparedStatement statement = getConnection().prepareStatement("SELECT account FROM user WHERE account = '" + account + "'");
@@ -62,10 +62,10 @@ public class DBHandler {
 		return result;
 	}
 	
-	public static boolean loginCheck(String account, String pw) throws Exception{
+	public static boolean loginCheck(String account, String password) throws Exception{
 		boolean result = false;
 		try {
-			PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM user WHERE account = '" + account + "' AND password = '" + pw + "'");
+			PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM user WHERE account = '" + account + "' AND password = '" + password + "'");
 			ResultSet resultSet = statement.executeQuery();
 			if(resultSet.next()) {
 				result = true;
@@ -75,5 +75,24 @@ public class DBHandler {
 		}
 		return result;
 	}
+	
+	public static void signUpInfo(String account, String password) {
+		String var1 = account;
+		String var2 = password;
+		try {
+			Connection conn = getConnection();
+			PreparedStatement insert = conn
+					.prepareStatement("INSERT INTO user(account, password) VALUES ('" + var1 + "', '" + var2 + "')");
+
+			insert.executeUpdate();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			System.out.println("[Build Completed]");
+		}
+		
+	}
+	
 }
 
