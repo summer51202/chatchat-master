@@ -3,6 +3,8 @@ package server;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Iterator;
+import java.util.Map;
 
 import client.*;
 
@@ -14,17 +16,20 @@ public class Chat implements Runnable{
 	public void run() {
 		try {
 			serverOutput = new ObjectOutputStream(socket.getOutputStream());
-			clientInput = new ObjectInputStream(socket.getInputStream());
+			serverInput = new ObjectInputStream(socket.getInputStream());
 			
-			WrappedObj userObj = (WrappedObj)clientInput.readObject();
-			MyServerSocket.onlineList.put(userObj.user.getUsername(), this);
-			System.out.println("[" + userObj.user.getUsername() + " is online]");
+//Receive user identity			
+//			WrappedObj userObj = (WrappedObj)serverInput.readObject();
+//			MyServerSocket.onlineList.put(userObj.user.getUsername(), this);
+//			this.user = userObj.user;
+//			System.out.println("[" + userObj.user.getUsername() + " is online]");
 			while(true) {
-				WrappedObj msgObj = (WrappedObj)clientInput.readObject();
-				serverOutput.writeObject(msgObj);
+				WrappedObj wrappedObj = (WrappedObj)serverInput.readObject();
+				MyServerSocket.writeTo(wrappedObj, this);
+//				serverOutput.writeObject(wrappedObj);
 //				String clientText = clientInput.readObject();
 //				serverOutput.writeBytes(clientText + "\n");
-				System.out.println("From Client: " + msgObj.msg.getContext());
+//				System.out.println("From Client: " + wrappedObj.msg.getContext());
 //				serverOutput.flush();
 			}
 //			clientInput.close();
@@ -33,8 +38,23 @@ public class Chat implements Runnable{
 			e.printStackTrace();
 		}
 	}
+	
+	public void enlist(WrappedObj obj) {
+		MyServerSocket.onlineList.put(obj.user.getUsername(), this);
+		this.user = obj.user;
+		System.out.println("[" + obj.user.getUsername() + " is online]");
+	}
+	
+	public void write(WrappedObj obj) {
+		try {
+			this.serverOutput.writeObject(obj);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public User user;
 	private Socket socket;
-//	private BufferedReader clientInput;
-	private ObjectInputStream clientInput;
+	private ObjectInputStream serverInput;
 	private ObjectOutputStream serverOutput;
 }
