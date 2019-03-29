@@ -114,19 +114,14 @@ public class LoginPage extends JFrame implements ActionListener{
 		setVisible(true);
 	}
 	
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		String username = usernameTextField.getText();
         String password = passwordTextField.getText();
 		
-        DBHandler dbHandler = new DBHandler();
-        Connection connection = null;
-        PreparedStatement statement = null;
-        
         if (e.getSource() == loginButton) {
         	try {
         		System.out.println("[Login]");
-        		if(dbHandler.loginCheck(username, password)) {
+        		if(DBHandler.loginCheck(username, password)) {
         			System.out.println("[" + username + " Success Login]");
         			JOptionPane.showMessageDialog(this, "Login successful!", "Login", JOptionPane.INFORMATION_MESSAGE);
         			User user = new User(username);
@@ -151,10 +146,10 @@ public class LoginPage extends JFrame implements ActionListener{
         if (e.getSource() == signUpButton) {
         	try {
 				System.out.println("[SignUp]");
-				if(!dbHandler.accountCheck(username)) {
+				if(!DBHandler.accountCheck(username)) {
 					System.out.println("[" + username + " Success SignUp]");
 					JOptionPane.showMessageDialog(this, "Sign up successful!", "SignUp", JOptionPane.INFORMATION_MESSAGE);
-					dbHandler.signUpInfo(username, password);
+					DBHandler.signUpInfo(username, password);
 					
 					usernameTextField.setText("<Your Username>");
         			usernameTextField.setForeground(new java.awt.Color(204,204,204));
@@ -175,9 +170,6 @@ public class LoginPage extends JFrame implements ActionListener{
         }
 
 	}
-	
-	
-	static LoginPage loginPage;
 	
 	private JLabel icon = null;
 	private JTextField usernameTextField = null;

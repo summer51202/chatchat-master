@@ -3,9 +3,6 @@ package server;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Iterator;
-import java.util.Map;
-
 import client.*;
 
 public class Chat implements Runnable{
@@ -18,19 +15,10 @@ public class Chat implements Runnable{
 			serverOutput = new ObjectOutputStream(socket.getOutputStream());
 			serverInput = new ObjectInputStream(socket.getInputStream());
 			
-//Receive user identity			
-//			WrappedObj userObj = (WrappedObj)serverInput.readObject();
-//			MyServerSocket.onlineList.put(userObj.user.getUsername(), this);
-//			this.user = userObj.user;
-//			System.out.println("[" + userObj.user.getUsername() + " is online]");
+//Receiving from client		
 			while(true) {
 				WrappedObj wrappedObj = (WrappedObj)serverInput.readObject();
 				MyServerSocket.writeTo(wrappedObj, this);
-//				serverOutput.writeObject(wrappedObj);
-//				String clientText = clientInput.readObject();
-//				serverOutput.writeBytes(clientText + "\n");
-//				System.out.println("From Client: " + wrappedObj.msg.getContext());
-//				serverOutput.flush();
 			}
 //			clientInput.close();
 //			socket.close();
@@ -40,9 +28,9 @@ public class Chat implements Runnable{
 	}
 	
 	public void enlist(WrappedObj obj) {
-		MyServerSocket.onlineList.put(obj.user.getUsername(), this);
-		this.user = obj.user;
-		System.out.println("[" + obj.user.getUsername() + " is online]");
+		MyServerSocket.onlineList.put(obj.operation.getUser().getUsername(), this);
+		this.user = obj.operation.getUser();
+		System.out.println("[" + obj.operation.getUser().getUsername() + " is online]");
 	}
 	
 	public void write(WrappedObj obj) {

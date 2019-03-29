@@ -2,6 +2,7 @@ package server;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -33,33 +34,50 @@ public class MyServerSocket {
 	public static void writeTo(WrappedObj obj, Chat chat) {
 		try {
 			switch (obj.objectType) {
-			case (WrappedObj.USER):
+			case (WrappedObj.OPERATION):
 				
 //OnlineInfo broadcast	
-
-				Message onlineRemind = new Message(obj.user.getUsername() + " is online!", "");
-				WrappedObj wrappedObj = new WrappedObj(onlineRemind);
+				
+				ArrayList<String> receiver = new ArrayList<String>();
+				receiver.add("World");
+				Message onlineRemind = new Message(obj.operation.getUser().getUsername() + " is online!", "", receiver);
+				WrappedObj wrappedObjUser = new WrappedObj(onlineRemind);
 				Iterator iterator = MyServerSocket.onlineList.entrySet().iterator();
 				while(iterator.hasNext()) {
 					Map.Entry mapEntry = (Map.Entry) iterator.next();
 					Chat chatTo = (Chat)mapEntry.getValue();
-					chatTo.write(wrappedObj);
+					chatTo.write(wrappedObjUser);
 				}
 					
 				chat.enlist(obj);
 			break;
 			case (WrappedObj.MESSAGE):
 				
-//Message broadcast	
+//Message directing
 				
-				System.out.println(obj.msg.getSender() + " : " + obj.msg.getContext());
-				Message msg = new Message(obj.msg.getSender() + " : " + obj.msg.getContext(), "");
-				WrappedObj wrappedObj2 = new WrappedObj(msg);
-				Iterator iterator2 = MyServerSocket.onlineList.entrySet().iterator();
-				while(iterator2.hasNext()) {
+				switch (obj.msg.msgType) {
+				case (Message.WORLD):
+					System.out.println(obj.msg.getSender() + " : " + obj.msg.getContext());
+				
+					Message msgToWorld = new Message(obj.msg.getSender() + " : " + obj.msg.getContext(), "");
+					WrappedObj wrappedObjWorld = new WrappedObj(msgToWorld);
+					
+					Iterator iterator2 = onlineList.entrySet().iterator();
+					while(iterator2.hasNext()) {
 					Map.Entry mapEntry = (Map.Entry) iterator2.next();
-					Chat chatTo = (Chat)mapEntry.getValue();
-					chatTo.write(wrappedObj2);
+					Chat chatToWorld = (Chat)mapEntry.getValue();
+					chatToWorld.write(wrappedObjWorld);
+				}
+					break;
+				case (Message.PERSONAL):
+					Message msgToPerson = new Message(obj.msg.getSender() + " : " + obj.msg.getContext(), "", obj.msg.getReceiver());
+					WrappedObj wrappedObjPerson = new WrappedObj(msgToPerson);
+					Chat chatToPerson = onlineList.get(obj.msg.getReceiver());
+					chatToPerson.write(wrappedObjPerson);
+					break;
+				case (Message.GROUP):
+					Message msgToGroup = new Message(obj.msg.getSender() + " : " + obj.msg.getContext(), "");
+					break;
 				}
 			break;
 			}
