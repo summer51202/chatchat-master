@@ -70,7 +70,7 @@ public class Main {
 		try {
 			Connection conn = getConnection();
 			PreparedStatement create = conn.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS user(id int NOT NULL AUTO_INCREMENT PRIMARY KEY, account varchar(255), password varchar(255) )");
+					"CREATE TABLE IF NOT EXISTS user(id int NOT NULL AUTO_INCREMENT PRIMARY KEY, account varchar(255), password varchar(255))");
 			create.executeUpdate();
 		} catch (Exception e) {
 			// TODO: handle exception

@@ -28,9 +28,9 @@ public class Chat implements Runnable{
 	}
 	
 	public void enlist(WrappedObj obj) {
-		MyServerSocket.onlineList.put(obj.operation.getUser().getUsername(), this);
-		this.user = obj.operation.getUser();
-		System.out.println("[" + obj.operation.getUser().getUsername() + " is online]");
+		MyServerSocket.onlineList.put(obj.operation.getSender().getUsername(), this);
+		this.user = obj.operation.getSender();
+		System.out.println("[" + obj.operation.getSender().getUsername() + " is online]");
 	}
 	
 	public void write(WrappedObj obj) {

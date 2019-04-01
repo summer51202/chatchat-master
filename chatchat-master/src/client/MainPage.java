@@ -15,6 +15,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -37,12 +38,11 @@ public class MainPage extends JFrame implements ActionListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		// Initialize GUI with GridBagLayout & CardLayout
 		setSize(400, 600);
 		setLayout(new GridBagLayout());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("Welcome To Chatchat " + MainPage.user.getUsername());
+		setTitle("Welcome To Chatchat, " + MainPage.user.getUsername());
 
 		cardLayout = new CardLayout();
 		chatCardLayout = new CardLayout();
@@ -65,6 +65,7 @@ public class MainPage extends JFrame implements ActionListener {
 		worldChButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				cardLayout.show(displayPanel, "World Channel");
+				setTitle("Welcome To Chatchat, " + MainPage.user.getUsername());
 			}
 		});
 		addComponent(worldChButton, this, 0, 0, 1, 1, 1, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL);
@@ -73,6 +74,7 @@ public class MainPage extends JFrame implements ActionListener {
 		friendListButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				cardLayout.show(displayPanel, "Friend List");
+				setTitle("Welcome To Chatchat, " + MainPage.user.getUsername());
 			}
 		});
 		addComponent(friendListButton, this, 1, 0, 1, 1, 1, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL);
@@ -81,6 +83,7 @@ public class MainPage extends JFrame implements ActionListener {
 		chatRoomButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				cardLayout.show(displayPanel, "Group List");
+				setTitle("Welcome To Chatchat, " + MainPage.user.getUsername());
 			}
 		});
 		addComponent(chatRoomButton, this, 2, 0, 1, 1, 1, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL);
@@ -172,15 +175,22 @@ public class MainPage extends JFrame implements ActionListener {
 				GridBagConstraints.BOTH);
 		
 		// INIT FRIEND LIST PANEL
-		
+	
 		// Set frienfListModel
 		friendListModel = new DefaultListModel<String>();
-		friendListModel.addElement("test");
-		friendListModel.addElement("test");
-		friendListModel.addElement("test");
-		friendListModel.addElement("test");
-		friendListModel.addElement("test");
-		friendListModel.addElement("test");
+//		friendListModel.addElement("test");
+//		friendListModel.addElement("test");
+//		friendListModel.addElement("test");
+//		friendListModel.addElement("test");
+//		friendListModel.addElement("test");
+//		friendListModel.addElement("test");
+		if(DBHandler.readFriendList(MainPage.user.getUsername()) != null) {
+			functionUnit.friendListMap = DBHandler.readFriendList(MainPage.user.getUsername());
+			for(String key : functionUnit.friendListMap.keySet()) {
+				friendListModel.addElement(key);
+			}
+		}
+		
 		JList<String> friendList = new JList<String>(friendListModel);
 		fScroll = new JScrollPane(friendList);
 		friendList.setFixedCellHeight(75);
@@ -191,6 +201,7 @@ public class MainPage extends JFrame implements ActionListener {
 					// Double-clicked detecting to jump to chatBox
 					cardLayout.show(displayPanel, "Chat");
 					chatCardLayout.show(chatPanel, friendList.getSelectedValue());
+					setTitle("With " + friendList.getSelectedValue());
 				}
 			}
 		});
@@ -295,7 +306,13 @@ public class MainPage extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 	}
+	
 
+//	protected void finalize() throws Throwable {
+//		// TODO Auto-generated method stub
+//		DBHandler.updateFriendList(this.user.getUsername(), functionUnit.friendListMap);
+//		super.finalize();
+//	}
 	public static MainPage mainPage;
 	public static JPanel controlPanel, displayPanel, worldChPanel, friendListPanel, groupListPanel, chatPanel;
 	public static JTextField typeInTextField, addFriendTextField;

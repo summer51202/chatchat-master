@@ -32,6 +32,9 @@ import javax.swing.UIManager.LookAndFeelInfo;
 public class LoginPage extends JFrame implements ActionListener{
 
 	public LoginPage() {
+		
+//		DBHandler dbHandler = new DBHandler();
+		
 		setSize(400, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
