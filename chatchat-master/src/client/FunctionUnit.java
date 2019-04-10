@@ -107,6 +107,6 @@ public class FunctionUnit extends Thread {
 	private ObjectInputStream clientInput;
 	private ObjectOutputStream clientOutput;
 	private Socket socket;
-	final private String server_IP = "192.168.1.134";
+	final private String server_IP = "192.168.50.214";
 
 }

@@ -5,7 +5,10 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 
 import javax.swing.UIManager;
-
+//1.Add scrollPane in MainPage
+//2.將chatBox加入Map中，再將Map序列化，如此當Map反序列化時，chatBox會被new出來嗎?(addKey、ActionListener好像不會) 貌似就是這樣，所以需要另外保存聊天紀錄=> initBox
+//3.Add scrollPane in chatBox
+//4.不知名的出現aaa的聊天紀錄
 public class Main {
 
 	public static void main(String[] args) throws Exception {

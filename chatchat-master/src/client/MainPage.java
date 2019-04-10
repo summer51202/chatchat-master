@@ -27,7 +27,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-
 public class MainPage extends JFrame implements ActionListener {
 	public MainPage(User user) {
 		mainPage = this;
@@ -51,10 +50,10 @@ public class MainPage extends JFrame implements ActionListener {
 		friendListPanel = new JPanel(new GridBagLayout());
 		groupListPanel = new JPanel();
 		chatPanel = new JPanel(chatCardLayout);
-//		chatPanel.add(new JPanel(), "Default Panel");
-		
+		// chatPanel.add(new JPanel(), "Default Panel");
+
 		// INIT DISPLAY PANEL
-		
+
 		displayPanel.add(worldChPanel, "World Channel");
 		displayPanel.add(friendListPanel, "Friend List");
 		displayPanel.add(groupListPanel, "Group List");
@@ -96,8 +95,8 @@ public class MainPage extends JFrame implements ActionListener {
 		});
 		addComponent(chatButton, this, 3, 0, 1, 1, 2, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL);
 
-		//INIT WORLD CHANNEL PANEL
-		
+		// INIT WORLD CHANNEL PANEL
+
 		// Set Typing field
 		typeInTextField = new JTextField("<Type here>");
 		typeInTextField.setForeground(new java.awt.Color(204, 204, 204));
@@ -130,6 +129,7 @@ public class MainPage extends JFrame implements ActionListener {
 
 			public void keyPressed(KeyEvent keyEvent) {
 				if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
+					System.out.println("[Enter]");
 					if (!typeInTextField.getText().equals("")) {
 						try {
 							Message msg = new Message(typeInTextField.getText(), user.getUsername());
@@ -168,45 +168,45 @@ public class MainPage extends JFrame implements ActionListener {
 		});
 		addComponent(sendButton, worldChPanel, 1, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
 
-		// Set Displaying area
+		// Set Displaying area to ScrollPane
 		displayTextArea = new JTextArea();
+		displayScroll = new JScrollPane(displayTextArea);
 		displayTextArea.setEditable(false);
-		addComponent(displayTextArea, worldChPanel, 0, 0, 2, 1, 1, 6, GridBagConstraints.CENTER,
+		addComponent(displayScroll, worldChPanel, 0, 0, 2, 1, 1, 6, GridBagConstraints.CENTER,
 				GridBagConstraints.BOTH);
-		
+
 		// INIT FRIEND LIST PANEL
-	
-		// Set frienfListModel
+
+		// Get friendList from DB & rebuild chatBoxs
 		friendListModel = new DefaultListModel<String>();
-//		friendListModel.addElement("test");
-//		friendListModel.addElement("test");
-//		friendListModel.addElement("test");
-//		friendListModel.addElement("test");
-//		friendListModel.addElement("test");
-//		friendListModel.addElement("test");
-		if(DBHandler.readFriendList(MainPage.user.getUsername()) != null) {
-			functionUnit.friendListMap = DBHandler.readFriendList(MainPage.user.getUsername());
-			for(String key : functionUnit.friendListMap.keySet()) {
+
+		if (DBHandler.readFriendList(MainPage.user.getUsername()) != null) {
+			FunctionUnit.friendListMap = DBHandler.readFriendList(MainPage.user.getUsername());
+			for (String key : FunctionUnit.friendListMap.keySet()) {
 				friendListModel.addElement(key);
+				FunctionUnit.friendListMap.get(key).initBox();
+				chatPanel.add(FunctionUnit.friendListMap.get(key).panel,
+						FunctionUnit.friendListMap.get(key).getRoomName());
 			}
 		}
-		
+
 		JList<String> friendList = new JList<String>(friendListModel);
 		fScroll = new JScrollPane(friendList);
 		friendList.setFixedCellHeight(75);
 		friendList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
 				if (evt.getClickCount() == 2) {
-					
+
 					// Double-clicked detecting to jump to chatBox
 					cardLayout.show(displayPanel, "Chat");
-					chatCardLayout.show(chatPanel, friendList.getSelectedValue());
-					setTitle("With " + friendList.getSelectedValue());
+					chatCardLayout.show(chatPanel, FunctionUnit.friendListMap.get(friendList.getSelectedValue()).getRoomName());
+//					setTitle(MainPage.user.getUsername() + " with " + friendList.getSelectedValue());
+					setTitle(FunctionUnit.friendListMap.get(friendList.getSelectedValue()).getRoomName());
 				}
 			}
 		});
 		addComponent(fScroll, friendListPanel, 0, 1, 2, 1, 1, 8, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
-		
+
 		addFriendTextField = new JTextField("<Search here>");
 		addFriendTextField.setForeground(new java.awt.Color(204, 204, 204));
 		addFriendTextField.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -226,7 +226,7 @@ public class MainPage extends JFrame implements ActionListener {
 				}
 			}
 		});
-		
+
 		addFriendTextField.addKeyListener(new KeyListener() {
 
 			public void keyTyped(KeyEvent arg0) {
@@ -237,48 +237,56 @@ public class MainPage extends JFrame implements ActionListener {
 
 			public void keyPressed(KeyEvent keyEvent) {
 				if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
-					if (!addFriendTextField.getText().equals("") && !addFriendTextField.getText().equals(MainPage.user.getUsername())) {
+					if (!addFriendTextField.getText().equals("")
+							&& !addFriendTextField.getText().equals(MainPage.user.getUsername())) {
 						try {
 							String friend = addFriendTextField.getText();
-							if(DBHandler.accountCheck(friend)) {
+							if (DBHandler.accountCheck(friend)) {
 								functionUnit.addFriend(friend);
-								JOptionPane.showMessageDialog(friendListPanel, "Adding successful!", "", JOptionPane.INFORMATION_MESSAGE);
+								JOptionPane.showMessageDialog(friendListPanel, "Adding successful!", "",
+										JOptionPane.INFORMATION_MESSAGE);
 							} else {
-								JOptionPane.showMessageDialog(friendListPanel, "This user is not exist!", "Failed", JOptionPane.ERROR_MESSAGE);
+								JOptionPane.showMessageDialog(friendListPanel, "This user is not exist!", "Failed",
+										JOptionPane.ERROR_MESSAGE);
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
-						} 
+						}
 					}
 					addFriendTextField.setText("<Search here>");
 					addFriendTextField.setForeground(new java.awt.Color(204, 204, 204));
 				}
 			}
 		});
-		addComponent(addFriendTextField, friendListPanel, 0, 0, 1, 1, 4, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
-		
+		addComponent(addFriendTextField, friendListPanel, 0, 0, 1, 1, 4, 1, GridBagConstraints.CENTER,
+				GridBagConstraints.BOTH);
+
 		addFriendButton = new JButton("ԅ(¯﹃¯ԅ)");
 		addFriendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				if (!addFriendTextField.getText().equals("") && !addFriendTextField.getText().equals(MainPage.user.getUsername())) {
+				if (!addFriendTextField.getText().equals("")
+						&& !addFriendTextField.getText().equals(MainPage.user.getUsername())) {
 					try {
 						String friend = addFriendTextField.getText();
-						if(DBHandler.accountCheck(friend)) {
+						if (DBHandler.accountCheck(friend)) {
 							functionUnit.addFriend(friend);
-							JOptionPane.showMessageDialog(friendListPanel, "Adding successful!", "", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(friendListPanel, "Adding successful!", "",
+									JOptionPane.INFORMATION_MESSAGE);
 						} else {
-							JOptionPane.showMessageDialog(friendListPanel, "This user is not exist!", "Failed", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(friendListPanel, "This user is not exist!", "Failed",
+									JOptionPane.ERROR_MESSAGE);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
-					} 
+					}
 				}
 				addFriendTextField.setText("<Search here>");
 				addFriendTextField.setForeground(new java.awt.Color(204, 204, 204));
 			}
 		});
-		addComponent(addFriendButton, friendListPanel, 1, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH);
-		
+		addComponent(addFriendButton, friendListPanel, 1, 0, 1, 1, 1, 1, GridBagConstraints.CENTER,
+				GridBagConstraints.BOTH);
+
 		// CENTRALIZE THE WINDOW
 		Toolkit toolkit = getToolkit();
 		Dimension size = toolkit.getScreenSize();
@@ -286,8 +294,8 @@ public class MainPage extends JFrame implements ActionListener {
 	}
 
 	// Method to add Components in GridBagLayout
-	public static void addComponent(Component component, Container container, int row, int column, int width, int height,
-			double weightx, double weighty, int anchor, int fill) {
+	public static void addComponent(Component component, Container container, int row, int column, int width,
+			int height, double weightx, double weighty, int anchor, int fill) {
 		constraints.gridx = row;
 		constraints.gridy = column;
 		constraints.gridwidth = width;
@@ -306,13 +314,13 @@ public class MainPage extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 	}
-	
 
-//	protected void finalize() throws Throwable {
-//		// TODO Auto-generated method stub
-//		DBHandler.updateFriendList(this.user.getUsername(), functionUnit.friendListMap);
-//		super.finalize();
-//	}
+	// protected void finalize() throws Throwable {
+	// // TODO Auto-generated method stub
+	// DBHandler.updateFriendList(this.user.getUsername(),
+	// functionUnit.friendListMap);
+	// super.finalize();
+	// }
 	public static MainPage mainPage;
 	public static JPanel controlPanel, displayPanel, worldChPanel, friendListPanel, groupListPanel, chatPanel;
 	public static JTextField typeInTextField, addFriendTextField;
@@ -322,7 +330,7 @@ public class MainPage extends JFrame implements ActionListener {
 	public static User user;
 	public static DefaultListModel<String> friendListModel;
 	public static DefaultListModel<ChatBox> chatRoomListModel;
-	public static JScrollPane fScroll, rScroll;
+	public static JScrollPane fScroll, rScroll, displayScroll;
 	public static GridBagConstraints constraints = new GridBagConstraints();
 	public static FunctionUnit functionUnit;
 }
