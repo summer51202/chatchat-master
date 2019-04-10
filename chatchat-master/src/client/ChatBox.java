@@ -30,7 +30,7 @@ public class ChatBox implements Serializable {
 			}
 		}
 
-		panel = new JPanel(new GridBagLayout());
+//		panel = new JPanel(new GridBagLayout());
 
 		boxTextArea = new JTextArea();
 		boxTextArea.setEditable(false);

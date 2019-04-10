@@ -9,6 +9,7 @@ import javax.swing.UIManager;
 //2.將chatBox加入Map中，再將Map序列化，如此當Map反序列化時，chatBox會被new出來嗎?(addKey、ActionListener好像不會) 貌似就是這樣，所以需要另外保存聊天紀錄=> initBox
 //3.Add scrollPane in chatBox
 //4.不知名的出現aaa的聊天紀錄
+//5.想一下buildGroup的UI
 public class Main {
 
 	public static void main(String[] args) throws Exception {
